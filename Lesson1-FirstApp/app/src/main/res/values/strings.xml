@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Lesson 1 - First App</string>
+    <string name="button_roll_text">Roll</string>
+</resources>
