@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Lesson 2 - Layout AboutMe</string>
+    <string name="name">Dinh Lam</string>
+    <string name="yellow_star">Yellow star image</string>
+    <string name="long_text">White-label apps can be a good outcome when you can sell a
+        \ncertain concept to multiple companies, and only need to adjust some minor things before shipping for a new client.
+        \nApart from that it can also come in handy when you have different versions of your app while the main functionality remains the same.
+        \nA white-label project means you develop your main app once and make different flavours of that app for each version.
+        \nThat way you can rapidly develop the app, move quickly when a new client comes in, and fix stuff fast when bugs appear.
+        So what if we have this amazing idea, and it applies to multiple companies?
+        \nOr what if we need different versions of an app, but they share most of the core functionality?
+        \nWe can simply create our project as we normally do, but can take some stuff into account straight from the beginning.
+        \nAlready have a solid app and want to white-label that? No worries, the same stuff applies to you!
+        <![CDATA[You might’ve used them before: product flavours in your Gradle file.
+    \nThey’re good for setting up multiple environments for example:
+    \nstaging, production, etc. They’re super handy for setting up multiple flavours as well!
+    \nLet’s have a short look into how the setup will look like. We can create our app like we normally would.
+    \nAll the core functionality will go into the main part of our app.
+    \nWhen we run a build, this is what’s going to be used in every case, regardless of the flavour.
+    \nEverything that we specifically define for a flavour will then be used and will even override
+    something when it’s also defined in our main part.
+    \nThis can mean variables in our Gradle file, resources like app icons & colors or even layouts and classes!]]>
+    </string>
+    <string name="what_is_your_nickname">What is your nickname?</string>
+    <string name="done">Done</string>
+</resources>
