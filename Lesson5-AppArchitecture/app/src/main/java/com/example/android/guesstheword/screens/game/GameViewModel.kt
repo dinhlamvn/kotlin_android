@@ -8,6 +8,11 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import timber.log.Timber
 
+private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+private val NO_BUZZ_PATTERN = longArrayOf(0)
+
 class GameViewModel : ViewModel() {
 
     enum class BuzzType(val pattern : LongArray) {
@@ -24,10 +29,7 @@ class GameViewModel : ViewModel() {
 
         const val GAME_TIME_COUNTDOWN = 60000L
 
-        private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
-        private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
-        private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
-        private val NO_BUZZ_PATTERN = longArrayOf(0)
+        const val GAME_TIME_PANIC = 10L
     }
 
     // The timer
@@ -76,7 +78,7 @@ class GameViewModel : ViewModel() {
             override fun onTick(millisUntilFinished: Long) {
                 val timeInSecond = millisUntilFinished / 1000
                 _time.value = timeInSecond
-                if (timeInSecond < 10) {
+                if (timeInSecond < GAME_TIME_PANIC) {
                     _buzzType.value = BuzzType.COUNTDOWN_PANIC
                 }
             }
