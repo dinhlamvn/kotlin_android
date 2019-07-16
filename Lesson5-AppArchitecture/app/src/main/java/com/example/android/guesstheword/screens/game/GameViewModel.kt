@@ -1,12 +1,37 @@
 package com.example.android.guesstheword.screens.game
 
-import android.util.Log
+import android.os.CountDownTimer
+import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import timber.log.Timber
 
 class GameViewModel : ViewModel() {
+
+    enum class BuzzType(val pattern : LongArray) {
+        CORRECT(CORRECT_BUZZ_PATTERN),
+        GAME_OVER(GAME_OVER_BUZZ_PATTERN),
+        COUNTDOWN_PANIC(PANIC_BUZZ_PATTERN),
+        NO_BUZZ(NO_BUZZ_PATTERN),
+    }
+
+    companion object {
+        const val DONE = 0L
+
+        const val ONE_SECOND = 1000L
+
+        const val GAME_TIME_COUNTDOWN = 60000L
+
+        private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+        private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+        private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+        private val NO_BUZZ_PATTERN = longArrayOf(0)
+    }
+
+    // The timer
+    private val timer : CountDownTimer
 
     // The current word
     private val _word = MutableLiveData<String>()
@@ -24,6 +49,19 @@ class GameViewModel : ViewModel() {
     val gameEventFinish : LiveData<Boolean>
         get() = _gameEventFinish
 
+    // The buzz
+    private val _buzzType = MutableLiveData<BuzzType>()
+    val buzzType : LiveData<BuzzType>
+        get() = _buzzType
+
+    // The time of game
+    private val _time = MutableLiveData<Long>()
+    val time : LiveData<Long>
+        get() = _time
+    val timeString = Transformations.map(_time) { t ->
+        DateUtils.formatElapsedTime(t)
+    }
+
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
@@ -32,11 +70,31 @@ class GameViewModel : ViewModel() {
         resetList()
         nextWord()
         _score.value = 0
+        _buzzType.value = BuzzType.NO_BUZZ
+        timer = object : CountDownTimer(GAME_TIME_COUNTDOWN, ONE_SECOND) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                val timeInSecond = millisUntilFinished / 1000
+                _time.value = timeInSecond
+                if (timeInSecond < 10) {
+                    _buzzType.value = BuzzType.COUNTDOWN_PANIC
+                }
+            }
+
+            override fun onFinish() {
+                _time.value = DONE
+                _gameEventFinish.value = true
+                _buzzType.value = BuzzType.GAME_OVER
+            }
+        }
+        _time.value = (GAME_TIME_COUNTDOWN / 1000)
+        timer.start()
     }
 
     override fun onCleared() {
         super.onCleared()
         Timber.d("GameViewModel destroyed!")
+        timer.cancel()
     }
 
     /**
@@ -75,10 +133,9 @@ class GameViewModel : ViewModel() {
     fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-            _gameEventFinish.value = true
-        } else {
-            _word.value = wordList.removeAt(0)
+            resetList()
         }
+        _word.value = wordList.removeAt(0)
     }
 
     /** Methods for buttons presses **/
@@ -88,11 +145,16 @@ class GameViewModel : ViewModel() {
     }
 
     fun onCorrect() {
+        _buzzType.value = BuzzType.CORRECT
         _score.value = _score.value?.plus(1)
         nextWord()
     }
 
     fun onGameFinishComplete() {
         _gameEventFinish.value = false
+    }
+
+    fun onBuzzComplete() {
+        _buzzType.value = BuzzType.NO_BUZZ
     }
 }
