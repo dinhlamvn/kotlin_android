@@ -157,5 +157,18 @@ class SleepTrackerViewModel(
     fun doneShowSnakeBar() {
         _showSnakeBar.value = false
     }
+
+    // The function to move to sleep quality data detail
+    private val _navigateToSleepDataQuality = MutableLiveData<Long>()
+    val navigateToSleepDataQuality
+        get() = _navigateToSleepQuality
+
+    fun onSleepNightClicked(id: Long) {
+        _navigateToSleepDataQuality.value = id
+    }
+
+    fun onSleepNightDataQualityNavigated() {
+        _navigateToSleepDataQuality.value = null
+    }
 }
 

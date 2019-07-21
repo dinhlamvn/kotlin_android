@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.example.android.trackmysleepquality.R
 import com.example.android.trackmysleepquality.convertDurationToFormatted
+import com.example.android.trackmysleepquality.convertLongToDateString
 import com.example.android.trackmysleepquality.convertNumericQualityToString
 import com.example.android.trackmysleepquality.database.SleepNight
 
@@ -36,5 +37,12 @@ fun ImageView.sleepQualityImage(item: SleepNight?) {
                     else -> R.drawable.ic_launcher_sleep_tracker_foreground
                 }
         )
+    }
+}
+
+@BindingAdapter("timeString")
+fun TextView.timeString(time: Long?) {
+    time?.let {
+        text = convertLongToDateString(it)
     }
 }

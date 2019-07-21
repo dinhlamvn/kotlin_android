@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="sleepDetailViewModel"
+            type="com.example.android.trackmysleepquality.sleepdetail.SleepDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="60dp"
+            android:layout_marginTop="128dp"
+            android:contentDescription="@string/todo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/ic_sleep_5"
+            app:sleepQualityImage="@{sleepDetailViewModel.getNight}"/>
+
+        <TextView
+            android:id="@+id/sleepQuality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="136dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            tools:text="Excellent!!!"
+            app:sleepQuality="@{sleepDetailViewModel.getNight}"/>
+
+        <TextView
+            android:id="@+id/sleepStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="@+id/sleepQuality"
+            app:layout_constraintStart_toStartOf="@+id/sleepQuality"
+            app:layout_constraintTop_toBottomOf="@+id/sleepQuality"
+            tools:text="1/1/2019 00:00 AM"
+            app:timeString="@{sleepDetailViewModel.getNight.startTimeMilli}"/>
+
+        <TextView
+            android:id="@+id/sleepEndTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="@+id/sleepStartTime"
+            app:layout_constraintStart_toStartOf="@+id/sleepStartTime"
+            app:layout_constraintTop_toBottomOf="@+id/sleepStartTime"
+            tools:text="1/2/2019 07:00 AM"
+            app:timeString="@{sleepDetailViewModel.getNight.endTimeMilli}"/>
+
+        <Button
+            android:id="@+id/closeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="@string/close"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:onClick="@{() -> sleepDetailViewModel.onClose()}"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

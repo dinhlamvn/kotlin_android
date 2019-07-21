@@ -7,11 +7,16 @@
         <variable
             name="sleep"
             type="com.example.android.trackmysleepquality.database.SleepNight" />
+
+        <variable
+            name="clickListener"
+            type="com.example.android.trackmysleepquality.sleeptracker.SleepNightAdapter.SleepNightListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(sleep)}">
 
         <ImageView
             android:id="@+id/qualityImage"
@@ -28,27 +33,14 @@
             app:sleepQualityImage="@{sleep}"/>
 
         <TextView
-            android:id="@+id/sleepLength"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/qualityImage"
-            app:layout_constraintTop_toTopOf="@+id/qualityImage"
-            tools:text="Wednesday"
-            app:sleepDuration="@{sleep}"/>
-
-        <TextView
             android:id="@+id/sleepQuality"
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/sleepLength"
-            app:layout_constraintStart_toStartOf="@+id/sleepLength"
-            app:layout_constraintTop_toBottomOf="@+id/sleepLength"
-            tools:text="Excellent!!!"
-            app:sleepQuality="@{sleep}"/>
+            app:layout_constraintEnd_toEndOf="@+id/qualityImage"
+            app:layout_constraintStart_toStartOf="@+id/qualityImage"
+            app:layout_constraintTop_toBottomOf="@+id/qualityImage"
+            app:sleepQuality="@{sleep}"
+            tools:text="Excellent!!!" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
