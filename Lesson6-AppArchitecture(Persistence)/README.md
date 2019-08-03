@@ -1,123 +1,104 @@
-# Room - SleepQualityTracker app
+# Lesson 6 - Using Room Database into the application
 
-This is the toy app for Lesson 6 of the [Android App Development in Kotlin course on Udacity](https://www.udacity.com/course/???).
+This lesson will talk about how to use **Room** database in your application and using **Coroutines** to work with database (insert, load, update).
 
-## SleepQualityTracker
+# Summary:
+* Room Database
+* DAO (Data Access Object)
+* Application Architecture with Room
+* Coroutines to work with database
+# Room?
+Room is API help you work with Database easier and clean. It use annotation to work with database. Example: @Entity to make a class is table in database, @PrimaryKey to make a field is a privary key.
 
-The SleepQualityTracker app is a demo app that helps you collect information about your sleep. 
-* Start time
-* End time
-* Quality
-* Time slept
+* SQL Database:
+  * **Entity**: Object or concept to store in the database. Entity class defines a table, each instance is stored as a table row
+  * **Query**: Request for data or information from a database table or tables, or a request to perform some action on the data.
 
-This app demonstrates the following views and techniques:
-* Room database
-* DAO
-* Coroutines
+* DAO Annotations:
+  * @Insert: To insert a new data to table
+  * @Delete: Remove a data from table
+  * @Update: Update data of table
+  * @Query: Get data from table or tables
+  * @Database: Make a class is a database manager
 
-It also uses and builds on the following techniques from previous lessons:
-* Transformation map
-* Data Binding in XML files
-* ViewModel Factory
-* Using Backing Properties to protect MutableLiveData
-* Observable state LiveData variables to trigger navigation
-
-## Screenshots
-
-![Screenshot1](screenshots/sleep_quality_tracker_start.png)
-![Screenshot2](screenshots/sleep_quality_tracker_stop.png)
-![Screenshot3](screenshots/sleep_quality_tracker_quality.png)
-
-## How to use this repo while taking the course
-
-
-Each code repository in this class has a chain of commits that looks like this:
-
-![listofcommits](https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58befe2e_listofcommits/listofcommits.png)
-
-These commits show every step you'll take to create the app. Each commit contains instructions for completing the that step.
-
-Each commit also has a **branch** associated with it of the same name as the commit message, as seen below:
-
-![branches](https://d17h27t6h515a5.cloudfront.net/topher/2017/April/590390fe_branches-ud855/branches-ud855.png
+* Example:
+  * Build an entity:
+```kotlin
+// Make this class is an entity
+@Entity(tableName = "daily_sleep_quality_table")
+data class SleepNight(
+  // Make field in primary key, auto increament
+  @PrimaryKey(autoGenerate = true)
+  val nightId: Long = 0L,
+  
+  // Make field is a column
+  @ColumnInfo(name = "start_time_milli")
+  val startTime: Long = System.currentTimeMillis(),
+  
+  ...
 )
-Access all branches from this tab.
-
-![listofbranches](https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58befe76_listofbranches/listofbranches.png
-)
-
-
-![branchesdropdown](https://d17h27t6h515a5.cloudfront.net/topher/2017/April/590391a3_branches-dropdown-ud855/branches-dropdown-ud855.png
-)
-
-The branches are also accessible from the drop-down in the "Code" tab.
-
-
-## Working with the Course Code
-
-Here are the basic steps for working with and completing exercises in the repo.
-
-The basic steps are:
-
-1. Clone the repo.
-2. Check out the branch corresponding to the step you want to attempt.
-3. Find and complete the TODOs.
-4. Optionally commit your code changes.
-5. Compare your code with the solution.
-6. Repeat steps 2-5 until you've gone trough all the steps to complete the toy app.
-
-
-**Step 1: Clone the repo**
-
-As you go through the course, you'll be instructed to clone the different exercise repositories, so you don't need to set these up now. You can clone a repository from github in a folder of your choice with the command:
-
-```bash
-git clone https://github.com/udacity/REPOSITORY_NAME.git
 ```
+  * Build a DAO
+```kotlin
+interface DatabaseDao {
+  // Create a function to insert new data
+  @Insert
+  fun insert(night: SleepNight)
 
-**Step 2: Check out the step branch**
-
-As you go through different steps in the code, you'll be told which step you're on, as well as a link to the corresponding branch.
-
-You'll want to check out the branch associated with that step. The command to check out a branch would be:
-
-```bash
-git checkout BRANCH_NAME
+  // Create a function to get all data from table
+  @Query("select * from daily_sleep_quality_table order by nightId desc")
+  fun getAllNights(): LiveData<List<SleepNight>>
+  
+  //....
+}
 ```
+  * Build a database manager
+```kotlin
+@Database(entities = [SleepNight::class.java], version = 1, exportSchema = false)
+abstract class SleepDatabase: RoomDatabase() {
+  // Declare DAO
+  abstract val sleepDatabaseDao: SleepDatabaseDao
 
-**Step 3: Find and complete the TODOs**
-
-Once you've checked out the branch, you'll have the code in the exact state you need. You'll even have TODOs, which are special comments that tell you all the steps you need to complete the exercise. You can easily navigate to all the TODOs using Android Studio's TODO tool. To open the TODO tool, click the button at the bottom of the screen that says TODO. This will display a list of all comments with TODO in the project. 
-
-We've numbered the TODO steps so you can do them in order:
-![todos](https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58bf00e7_todos/todos.png
-)
-
-**Step 4: Commit your code changes**
-
-After You've completed the TODOs, you can optionally commit your changes. This will allow you to see the code you wrote whenever you return to the branch. The following git code will add and save **all** your changes.
-
-```bash
-git add .
-git commit -m "Your commit message"
+  // Make a singleton object
+  companion object {
+    // ...
+    INSTANCE = Room.databaseBuilder(context.applicationContext,
+      SleepDatabase::class.java, "sleep_history_database")
+      .fallbackToDestructiveMigration().build()
+    )
+    ...
+  }
+}
 ```
+# Kotlin Coroutines
+* Asynchronous: Parallel processing
+* Non-blocking: Not block main thead
+* Sequential code
+* Kotlin Coroutines:
+  * **Job**: A background job conceptually, a job is a cancellable thing a life cycle that culminate in its completion
+  * **Dispatcher**: The dispatcher sends of corountines to run on various threads
+  * **Scope**: Combine information, including job and dispatcher, to define a context in which the corountines runs
+  * **Suspend keyword**: To make a normal function to a suspend function, it will be suspend until have a return value
+* Example to use coroutines to work with database
+```kotlin
+// Define a job
+val viewModelJob = Job()
 
-**Step 5: Compare with the solution**
+// Define scope
+val viewModelScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-Most exercises will have a list of steps for you to check off in the classroom. Once you've checked these off, you'll see a pop up window with a link to the solution code. Note the **Diff** link:
+// Using coroutines to load a night from database
+fun getNight(id: Long) {
+  viewModelScope.launch {
+    val night = getNightFromDatabase(id)
+  }
+}
 
-![solutionwindow](https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58bf00f9_solutionwindow/solutionwindow.png
-)
-
-The **Diff** link will take you to a Github diff as seen below:
-![diff](https://d17h27t6h515a5.cloudfront.net/topher/2017/March/58bf0108_diffsceenshot/diffsceenshot.png
-)
-
-All of the code that was added in the solution is in green, and the removed code (which will usually be the TODO comments) is in red. 
-
-You can also compare your code locally with the branch of the following step.
-
-## Report Issues
-Notice any issues with a repository? Please file a github issue in the repository.
-
-
+suspend fun getNightFromDatabase(id: Long) {
+  // Using background thread to load a data from database
+  withContext(Dispatchers.IO) {
+    return databaseDao.loadNight(id)
+  }
+}
+```
+Coroutines to make sure the database operation don't block UI thread and make a smooth user experience for your app.
